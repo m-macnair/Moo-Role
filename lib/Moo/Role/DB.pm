@@ -1,12 +1,13 @@
 package Moo::Role::DB;
-our $VERSION = 'v1.0.1';
+our $VERSION = 'v1.0.2';
 
-##~ DIGEST : 057c6e57601b94ec6e8bd86eb84d2d55
+##~ DIGEST : 2dcbbd920ac4a601731bc0c73aa1ba9d
 use Moo::Role;
+use Carp;
 
 ACCESSORS: {
 
-	has dbh => ( is => 'rw', );
+	has dbh                  => ( is => 'rw', );
 	has _transaction_counter => (
 		is      => 'rw',
 		lazy    => 1,
@@ -23,6 +24,7 @@ ACCESSORS: {
 
 sub _set_dbh {
 	my $self = shift;
+
 	use DBI;
 	my $dbh = DBI->connect( @_ ) or die $DBI::errstr;
 	$self->dbh( $dbh );
@@ -47,16 +49,29 @@ sub commithard {
 	$self->dbh->commit();
 }
 
-=head3 _func_sth_accessor
- THIS DOESN'T AND CAN'T WORK 
-=cut
+sub get_column_hash {
+	my ( $self, $sth, $col ) = @_;
+	my $return = [];
+	Carp::confess( "Column not provided and cannot be inferred" ) unless $col;
+	while ( my $row = $sth->fetchrow_hashref() ) {
+		push( @{$return}, $row->{$col} );
+	}
+	return $return;
+}
 
-# sub _mk_sth_accessor {
-# 	my ($self, $pair ) = @_;
-# 	has $pair->[0] => (
-# 		is      => 'rw',
-# 		lazy    => 1,
-# 		default => sub { $_[0]->dbh->prepare( $pair->[1] ) }
-# 	);
-# }
+sub get_column_array {
+	my ( $self, $sth, $col ) = @_;
+
+	my $return = [];
+	$col ||= 0;
+	while ( my $row = $sth->fetchrow_arrayref() ) {
+		push( @{$return}, $row->[$col] );
+	}
+	return $return;
+}
+
+sub last_insert_id {
+	die "nope";
+}
+
 1;

@@ -1,7 +1,7 @@
 package Moo::Role::UserAgent;
-our $VERSION = 'v1.0.2';
+our $VERSION = 'v1.0.3';
 
-##~ DIGEST : 3e825b983b65cceed778f35f3b124563
+##~ DIGEST : 856f90447f170a6c60b7e1a544fc7b98
 # Do http requests
 use Moo::Role;
 
@@ -44,9 +44,8 @@ sub postretrievejson {
 			return {
 				pass => 'data',
 				data => $jsondef
-			  }
-		}
-		catch {
+			}
+		} catch {
 			return {fail => "JSON decoding failure : $_"};
 		};
 	} else {

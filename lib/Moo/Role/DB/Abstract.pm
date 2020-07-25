@@ -2,7 +2,7 @@ package Moo::Role::DB::Abstract;
 
 #ABSTRACT: use $self->dbi and sql abstract
 use Try::Tiny;
-use Moo;
+use Moo::Role;
 
 ACCESSORS: {
 
@@ -53,12 +53,12 @@ sub delete {
 sub _shared_query {
 	my ( $self, $Q, $P ) = @_;
 	$P ||= [];
+	print "$Q with" . Data::Dumper::Dumper( \@{$P} );
 	my $sth = $self->dbh->prepare( $Q ) or die "failed to prepare statement :/";
 
 	try {
 		$sth->execute( @{$P} ) or die $!;
-	}
-	catch {
+	} catch {
 		require Data::Dumper;
 		require Carp;
 		Carp::confess( "Failed to execute ($Q) with parameters" . Data::Dumper::Dumper( \@{$P} ) );

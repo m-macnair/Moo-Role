@@ -1,7 +1,7 @@
 package Moo::Role::JSON;
 use Moo::Role;
-our $VERSION = 'v1.0.1';
-##~ DIGEST : e91f0115147dfefeb6c783216e51ce73
+our $VERSION = 'v1.0.2';
+##~ DIGEST : 9dd33a6576a8e65bac658d2ded9ac43c
 # enable $self->json and sugar
 use JSON;
 use Try::Tiny;
@@ -34,8 +34,7 @@ sub jsonloadfile {
 		}
 		close( $fh );
 		$struct = $self->json->decode( $buffer );
-	}
-	catch {
+	} catch {
 		confess( "Failed - $_" );
 	};
 	return $struct;
